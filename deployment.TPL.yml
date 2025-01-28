@@ -88,4 +88,4 @@ spec:
         - destination:
             port:
               number: 80
-            host: rentalservice.default.svc.cluster.local
+            host: rentalservice.%NAMESPACE%.svc.cluster.local

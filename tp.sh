@@ -22,14 +22,14 @@ if [ "$reponse" == "y" ]; then
 fi
 
 
-echo "Run image ? (y/n)"
+echo "Tester l'image (run) ? (y/n)"
 read reponse
 if [ "$reponse" == "y" ]; then
     docker run -p 4000:8080 -t $IMAGE_NAME:$IMAGE_VERSION || true
 fi
 
 
-echo "Push image ? (y/n)"
+echo "Push l'image ? (y/n)"
 read reponse
 if [ "$reponse" == "y" ]; then
     docker push $IMAGE_NAME:$IMAGE_VERSION
@@ -79,22 +79,20 @@ if [ "$reponse" == "y" ]; then
     kubectl apply -f deployment.gen.yml -n $NAMESPACE
 fi
 
-echo "Lancer proxy (arrière plan) ? (y/n)"
+echo "Obtenir gateway istio (background) ? (y/n)"
 read reponse
 if [ "$reponse" == "y" ]; then
-    minikube service rentalservice -n $NAMESPACE --url || true
+    kubectl -n istio-system port-forward deployment/istio-ingressgateway 31380:8080 &
 fi
 
-
-echo "Utiliser le docker engine de la VM minikube ? (y/n)"
+echo "Lancer dashboard ? (y/n)";
 read reponse
 if [ "$reponse" == "y" ]; then
-    minikube docker-env
-    eval $(minikube -p minikube docker-env)
+    kubectl -n istio-system port-forward deployment/kiali 20001:20001 || true
 fi
 
-echo "Obtenir gateway istio ? (y/n)"
+echo "Lancer grafana ? (y/n)";
 read reponse
 if [ "$reponse" == "y" ]; then
-    kubectl -n istio-system port-forward deployment/istio-ingressgateway 31380:8080  
+    kubectl -n istio-system port-forward deployment/grafana 3000:3000
 fi
