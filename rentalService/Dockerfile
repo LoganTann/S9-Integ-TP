@@ -1,5 +1,12 @@
-FROM openjdk:17-oracle
-VOLUME /tmp
+
+FROM amazoncorretto:17 AS install
+WORKDIR /build
+COPY . .
+RUN ./gradlew build
+
+
+FROM amazoncorretto:17 AS release
+VOLUME /TMP
 EXPOSE 8080
-ADD ./build/libs/lsi1-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=install /build/build/libs/*.jar app.jar
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
