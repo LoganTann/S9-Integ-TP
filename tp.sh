@@ -79,20 +79,10 @@ if [ "$reponse" == "y" ]; then
     kubectl apply -f deployment.gen.yml -n $NAMESPACE
 fi
 
-echo "Obtenir gateway istio (background) ? (y/n)"
+echo "Obtenir gateway istio + dashboard + grafana (background) ? (y/n)"
 read reponse
 if [ "$reponse" == "y" ]; then
     kubectl -n istio-system port-forward deployment/istio-ingressgateway 31380:8080 &
-fi
-
-echo "Lancer dashboard ? (y/n)";
-read reponse
-if [ "$reponse" == "y" ]; then
-    kubectl -n istio-system port-forward deployment/kiali 20001:20001 || true
-fi
-
-echo "Lancer grafana ? (y/n)";
-read reponse
-if [ "$reponse" == "y" ]; then
-    kubectl -n istio-system port-forward deployment/grafana 3000:3000
+    kubectl -n istio-system port-forward deployment/kiali 20001:20001 &
+    kubectl -n istio-system port-forward deployment/grafana 3000:3000 || true
 fi
